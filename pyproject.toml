@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "onetimesecret"
 version = "0.1.0"
-description = ""
+description = "This project is an HTTP service designed to create and retrieve one-time secrets, similar to the functionality offered by onetimesecret.com. The service does not require a user interface, operating solely as a JSON API service."
 authors = ["pecheritsa <pecheritsa.roman@gmail.com>"]
 readme = "README.md"
 
