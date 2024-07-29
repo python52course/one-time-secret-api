@@ -4,12 +4,12 @@ from models import Secret
 import uuid
 
 
-class SecretRepository(ABC):
+class Repository(ABC):
     """
     An abstract base class representing a repository for secrets.
     """
     @abstractmethod
-    async def create_secret(self, secret: Secret) -> str:
+    async def create(self, secret: Secret) -> str:
         """
         Create a new secret.
         Args:
@@ -20,7 +20,7 @@ class SecretRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_secret(self, secret_key: str) -> Optional[Secret]:
+    async def get(self, secret_key: str) -> Optional[Secret]:
         """
         Retrieve a secret by its secret_key.
         Args:
@@ -31,7 +31,7 @@ class SecretRepository(ABC):
         pass
 
     @abstractmethod
-    async def delete_secret(self, secret_key: str) -> None:
+    async def delete(self, secret_key: str) -> None:
         """
         Delete a secret by its secret_key.
         Args:
@@ -42,14 +42,14 @@ class SecretRepository(ABC):
         pass
 
 
-class FakeSecretRepository(SecretRepository):
+class FakeRepository(Repository):
     """
     A fake implementation of SecretRepository for testing purposes.
     """
     def __init__(self):
         self.data: Dict[str, Secret] = {}
 
-    async def create_secret(self, secret: Secret) -> str:
+    async def create(self, secret: Secret) -> str:
         """
         Create a new secret and store it in memory.
         Args:
@@ -61,7 +61,7 @@ class FakeSecretRepository(SecretRepository):
         self.data[secret.secret_key] = secret
         return secret.secret_key
 
-    async def get_secret(self, secret_key: str) -> Optional[Secret]:
+    async def get(self, secret_key: str) -> Optional[Secret]:
         """
         Retrieve a secret by its secret_key.
         Args:
@@ -71,7 +71,7 @@ class FakeSecretRepository(SecretRepository):
         """
         return self.data.get(secret_key)
 
-    async def delete_secret(self, secret_key: str) -> None:
+    async def delete(self, secret_key: str) -> None:
         """
         Delete a secret by its secret_key.
         Args:
@@ -81,17 +81,3 @@ class FakeSecretRepository(SecretRepository):
         """
         if secret_key in self.data:
             del self.data[secret_key]
-
-
-class MongoSecretRepository(SecretRepository):
-    """
-    The functionality will be implemented later
-    """
-    async def create_secret(self, secret: Secret) -> str:
-        pass
-
-    async def get_secret(self, secret_key: str) -> Optional[Secret]:
-        pass
-
-    async def delete_secret(self, secret_key: str) -> None:
-        pass
