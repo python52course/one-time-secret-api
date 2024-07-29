@@ -81,3 +81,17 @@ class FakeSecretRepository(SecretRepository):
         """
         if secret_key in self.data:
             del self.data[secret_key]
+
+
+class MongoSecretRepository(SecretRepository):
+    """
+    The functionality will be implemented later
+    """
+    async def create_secret(self, secret: Secret) -> str:
+        pass
+
+    async def get_secret(self, secret_key: str) -> Optional[Secret]:
+        pass
+
+    async def delete_secret(self, secret_key: str) -> None:
+        pass
