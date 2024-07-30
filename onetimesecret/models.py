@@ -19,3 +19,14 @@ class Secret(BaseModel):
     passphrase: str
     secret_key: str
     expiration: Optional[datetime] = None
+
+
+class SecretRequest(BaseModel):
+    """
+    Represents a request to create a secret.
+    Attributes:
+        secret (str): The actual secret data provided by the user.
+        passphrase (str): The passphrase provided by the user to access the secret.
+    """
+    secret: str
+    passphrase: str
