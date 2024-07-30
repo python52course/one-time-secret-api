@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, List
-from models import Secret
+from typing import Optional, Dict
+from onetimesecret.models import Secret
 import uuid
 
 
