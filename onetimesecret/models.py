@@ -6,7 +6,6 @@ from typing import Optional
 class Secret(BaseModel):
     """
     Represents a secret entity with associated metadata.
-
     Attributes:
         id (Optional[str]): Unique identifier for the secret. Optional field.
         secret (str): The actual secret data, which will be hashed.
@@ -30,3 +29,5 @@ class SecretRequest(BaseModel):
     """
     secret: str
     passphrase: str
+    expiration: Optional[datetime] = None
+
