@@ -1,15 +1,15 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from models import SecretRequest, Secret
-from database import FakeRepository
-from utils import generate_secret_key
+from onetimesecret.models import SecretRequest, Secret
+from onetimesecret.database import FakeRepository
+from onetimesecret.utils import generate_secret_key
 
 app = FastAPI(title="One Time Secrets")
 repository = FakeRepository()
 
 
 @app.post("/generate", response_model=str)
-async def generate_secret(request: SecretRequest):
+async def generate_secret(request: SecretRequest) -> JSONResponse:
     """
     Generate a new secret and store it in the repository.
     Args:
