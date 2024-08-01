@@ -1,6 +1,6 @@
-from pydantic import BaseModel
-from datetime import datetime
 from typing import Optional
+from datetime import datetime
+from pydantic import BaseModel
 
 
 class Secret(BaseModel):
@@ -30,4 +30,3 @@ class SecretRequest(BaseModel):
     secret: str
     passphrase: str
     expiration: Optional[datetime] = None
-
