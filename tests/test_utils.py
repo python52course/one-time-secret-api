@@ -18,4 +18,3 @@ def test_generate_secret_key_uniqueness():
     data = [generate_secret_key() for _ in range(100)]
     for secret_key in data:
         assert key != secret_key
-
