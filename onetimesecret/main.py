@@ -17,7 +17,10 @@ async def generate_secret(request: SecretRequest) -> JSONResponse:
     Returns:
         JSONResponse: A JSON response containing the generated secret_key.
     """
-    secret_key = generate_secret_key()
+    while True:
+        secret_key = generate_secret_key()
+        if secret_key not in repository.data:
+            break
     secret = Secret(secret=request.secret,
                     passphrase=request.passphrase,
                     secret_key=secret_key)
