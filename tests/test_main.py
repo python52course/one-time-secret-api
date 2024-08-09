@@ -104,3 +104,98 @@ async def test_generate_secret_with_existing_keys(clear_repository):
     assert new_secret_key in repository.data, "Generated key not stored in repository"
     assert repository.data[new_secret_key].secret == "new_secret"
     assert repository.data[new_secret_key].passphrase == "new_passphrase"
+
+
+@pytest.mark.asyncio
+async def test_get_secret(clear_repository):
+    """
+    Test retrieval of a secret with valid secret_key and passphrase.
+    This test first creates a secret and then retrieves it successfully.
+    It checks that:
+        - The response status code is 200.
+        - The response contains the correct secret.
+    Args:
+        clear_repository (fixture): A fixture that clears the repository data before the test.
+    Asserts:
+        The response status code is 200.
+        The response contains the correct secret.
+    """
+    response = client.post("/generate", json={"secret": "my_secret", "passphrase": "my_passphrase"})
+    assert response.status_code == 200
+    response_data = response.json()
+    secret_key = response_data["secret_key"]
+
+    response = client.post(f"/secrets/{secret_key}", json={"passphrase": "my_passphrase"})
+    assert response.status_code == 200
+    response_data = response.json()
+    assert response_data["secret"] == "my_secret"
+
+
+@pytest.mark.asyncio
+async def test_get_secret_with_invalid_key(clear_repository):
+    """
+    Test retrieval of a secret with an invalid secret_key.
+    This test sends a POST request to the '/secrets/{secret_key}' endpoint
+    with a non-existing secret_key.
+    It checks that the response status code is 404.
+    Args:
+        clear_repository (fixture): A fixture that clears the repository data before the test.
+    Asserts:
+        The response status code is 404.
+    """
+    response = client.post("/generate", json={"secret": "my_secret", "passphrase": "my_passphrase"})
+    assert response.status_code == 200
+
+    response = client.post("/secrets/invalid_key", json={"passphrase": "my_passphrase"})
+    assert response.status_code == 404
+    response_data = response.json()
+    assert response_data["detail"] == "Invalid secret_key"
+
+
+@pytest.mark.asyncio
+async def test_get_secret_with_invalid_passphrase(clear_repository):
+    """
+    Test retrieval of a secret with an incorrect passphrase.
+    This test sends a POST request to the '/generate' endpoint to create a secret,
+    then sends a POST request to the '/secrets/{secret_key}' endpoint with the correct key
+    but an incorrect passphrase. It checks that the response status code is 403.
+    Args:
+        clear_repository (fixture): A fixture that clears the repository data before the test.
+    Asserts:
+        The response status code is 403.
+    """
+    response = client.post("/generate", json={"secret": "my_secret", "passphrase": "my_passphrase"})
+    assert response.status_code == 200
+    response_data = response.json()
+    secret_key = response_data["secret_key"]
+
+    response = client.post(f"/secrets/{secret_key}", json={"passphrase": "wrong_passphrase"})
+    assert response.status_code == 403
+    response_data = response.json()
+    assert response_data["detail"] == "Invalid passphrase"
+
+
+@pytest.mark.asyncio
+async def test_get_secret_already_retrieved(clear_repository):
+    """
+    Test retrieval of a secret that has already been retrieved.
+    This test sends a POST request to the '/generate' endpoint to create a secret,
+    retrieves it successfully, and then attempts to retrieve it again.
+    It checks that the response status code is 404 on the second attempt.
+    Args:
+        clear_repository (fixture): A fixture that clears the repository data before the test.
+    Asserts:
+        The response status code is 404 on the second attempt.
+    """
+    response = client.post("/generate", json={"secret": "my_secret", "passphrase": "my_passphrase"})
+    assert response.status_code == 200
+    response_data = response.json()
+    secret_key = response_data["secret_key"]
+
+    response = client.post(f"/secrets/{secret_key}", json={"passphrase": "my_passphrase"})
+    assert response.status_code == 200
+
+    response = client.post(f"/secrets/{secret_key}", json={"passphrase": "my_passphrase"})
+    assert response.status_code == 404
+    response_data = response.json()
+    assert response_data["detail"] == "Invalid secret_key"

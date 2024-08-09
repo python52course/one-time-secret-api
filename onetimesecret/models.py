@@ -30,3 +30,12 @@ class SecretRequest(BaseModel):
     secret: str
     passphrase: str
     expiration: Optional[datetime] = None
+
+
+class PassphraseRequest(BaseModel):
+    """
+    Represents a request to access a secret using a passphrase.
+    Attributes:
+        passphrase (str): The passphrase used to retrieve the secret.
+    """
+    passphrase: str
