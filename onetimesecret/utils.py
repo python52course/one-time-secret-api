@@ -67,7 +67,7 @@ def decrypt(encrypted_data: str, master_key: bytes) -> str:
         str: The decrypted data.
     """
     data = urlsafe_b64decode(encrypted_data)
-    salt = data[:16]  # Extract the salt from the encrypted data
+    salt = data[:16]
     encrypted_message = data[16:]
     key = derive_key(master_key, salt)
     f = Fernet(key)
