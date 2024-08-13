@@ -1,7 +1,10 @@
-from abc import ABC, abstractmethod
-from typing import Optional, Dict
-from onetimesecret.models import Secret
 import uuid
+from abc import ABC, abstractmethod
+
+from typing import Dict, Optional
+
+from onetimesecret.models import Secret
+
 
 
 class Repository(ABC):
