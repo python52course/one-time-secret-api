@@ -1,11 +1,13 @@
-import random
-from string import ascii_letters, digits
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.backends import default_backend
-from cryptography.fernet import Fernet
-from base64 import urlsafe_b64encode, urlsafe_b64decode
 import os
+import random
+from base64 import urlsafe_b64decode, urlsafe_b64encode
+from string import ascii_letters, digits
+
+from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
 
 SELECTION = ascii_letters + digits
 

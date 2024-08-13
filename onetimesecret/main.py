@@ -1,10 +1,13 @@
-from fastapi import FastAPI, status, HTTPException
-from fastapi.responses import JSONResponse
-from onetimesecret.models import SecretRequest, Secret, PassphraseRequest
-from onetimesecret.database import FakeRepository
-from onetimesecret.utils import generate_secret_key, encrypt, decrypt
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, status
+from fastapi.responses import JSONResponse
+
+from onetimesecret.database import FakeRepository
+from onetimesecret.models import PassphraseRequest, Secret, SecretRequest
+from onetimesecret.utils import decrypt, encrypt, generate_secret_key
+
 
 app = FastAPI(title="One Time Secrets")
 repository = FakeRepository()
