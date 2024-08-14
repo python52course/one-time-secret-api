@@ -1,6 +1,6 @@
 import pytest
-
 from fastapi.testclient import TestClient
+
 from onetimesecret.main import app, secret_service
 
 client = TestClient(app)
