@@ -6,7 +6,6 @@ from typing import Dict, Optional
 from onetimesecret.models import Secret
 
 
-
 class Repository(ABC):
     """
     An abstract base class representing a repository for secrets.
