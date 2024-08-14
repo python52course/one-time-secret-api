@@ -1,20 +1,34 @@
 import pytest
-from onetimesecret.utils import generate_secret_key
+from cryptography.fernet import InvalidToken
+
+from onetimesecret.utils import encrypt, decrypt
 
 
-def test_generate_secret_key_length():
-    """
-    Test that the generated secret key has the correct length.
-    """
-    key = generate_secret_key()
-    assert len(key) == 6
+MASTER_KEY = b'masterkey'
 
 
-def test_generate_secret_key_uniqueness():
+def test_encrypt_decrypt():
     """
-    Test that multiple generate_secret_key calls return different keys.
+    Testing the encrypt and decrypt functions to verify the correct encryption and decryption of data
     """
-    key = generate_secret_key()
-    data = [generate_secret_key() for _ in range(100)]
-    for secret_key in data:
-        assert key != secret_key
+    data = "test"
+    encrypted_data = encrypt(data, MASTER_KEY)
+    assert encrypted_data != data
+
+    decrypted_data = decrypt(encrypted_data, MASTER_KEY)
+    assert decrypted_data == data
+
+
+def test_decrypt_invalid_key():
+    """
+    Testing that the decrypt function cannot decrypt data with an invalid master key.
+    """
+    data = "test"
+    encrypted_data = encrypt(data, MASTER_KEY)
+
+    wrong_key = b'invalidmasterkey'
+
+    with pytest.raises(InvalidToken):
+        decrypt(encrypted_data, wrong_key)
+
+
