@@ -1,42 +1,39 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel
 
 
 class Secret(BaseModel):
     """
-    Represents a secret entity with associated metadata.
+    Represents a secret stored in the system.
+
     Attributes:
-        id (Optional[str]): Unique identifier for the secret. Optional field.
-        secret (str): The actual secret data, which will be hashed.
-        passphrase (str): The passphrase to access the secret, which will be hashed.
-        secret_key (str): A unique key that is used to retrieve the secret.
-        expiration (Optional[datetime]): The expiration date and time for the secret.
+        id (str): The unique identifier for the secret.
+        secret (str): The encrypted secret content.
+        expiration (datetime): The expiration date and time of the secret.
     """
-    id: Optional[str] = None
+    id: str
     secret: str
-    passphrase: str
-    secret_key: str
-    expiration: Optional[datetime] = None
+    expiration: datetime
 
 
 class SecretRequest(BaseModel):
     """
-    Represents a request to create a secret.
+    Represents a request to create a new secret.
+
     Attributes:
-        secret (str): The actual secret data provided by the user.
-        passphrase (str): The passphrase provided by the user to access the secret.
+        secret (str): The content of the secret to be stored.
+        passphrase (str): The passphrase used to encrypt the secret.
     """
     secret: str
     passphrase: str
-    expiration: Optional[datetime] = None
 
 
 class PassphraseRequest(BaseModel):
     """
-    Represents a request to access a secret using a passphrase.
+    Represents a request to retrieve a secret using a passphrase.
+
     Attributes:
-        passphrase (str): The passphrase used to retrieve the secret.
+        passphrase (str): The passphrase used to decrypt the secret.
     """
     passphrase: str
