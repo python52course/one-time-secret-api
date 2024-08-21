@@ -37,3 +37,23 @@ class PassphraseRequest(BaseModel):
         passphrase (str): The passphrase used to decrypt the secret.
     """
     passphrase: str
+
+
+class SecretKeyResponse(BaseModel):
+    """
+    SecretResponse represents the response model for the secret generation endpoint.
+
+    Attributes:
+        secret_key (str): The generated secret key.
+    """
+    secret_key: str
+
+
+class SecretResponse(BaseModel):
+    """
+    SecretResponse represents the response model for the secret retrieval endpoint.
+
+    Attributes:
+        secret (str): The decrypted secret.
+    """
+    secret: str
