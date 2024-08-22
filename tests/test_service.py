@@ -1,9 +1,6 @@
 import pytest
-from datetime import datetime
-from cryptography.fernet import InvalidToken
 from fastapi import HTTPException, status
 
-from onetimesecret.models import Secret
 from onetimesecret.services import SecretService
 from onetimesecret.database import FakeRepository
 
