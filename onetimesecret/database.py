@@ -1,83 +1,58 @@
-from abc import ABC, abstractmethod
-from typing import Optional, Dict
+from typing import List, Optional
+
 from onetimesecret.models import Secret
-import uuid
 
 
-class Repository(ABC):
+class FakeRepository:
     """
-    An abstract base class representing a repository for secrets.
+    A fake implementation of a repository for storing secrets in memory.
+    This is primarily used for testing purposes without the need for a real database.
+
+    Attributes:
+        data (List[Secret]): A list that stores secret objects.
     """
-    @abstractmethod
-    async def create(self, secret: Secret) -> str:
+
+    def __init__(self) -> None:
         """
-        Create a new secret.
+        Initializes the FakeRepository with an empty list to hold secret data.
+        """
+        self.data: List[Secret] = []
+
+    async def create(self, secret: Secret) -> None:
+        """
+        Stores a new secret in the repository.
+
         Args:
             secret (Secret): The secret object to be stored.
-        Returns:
-            str
-        """
-        pass
 
-    @abstractmethod
-    async def get(self, secret_key: str) -> Optional[Secret]:
-        """
-        Retrieve a secret by its secret_key.
-        Args:
-            secret_key (str): The key associated with the secret.
-        Returns:
-            Optional[Secret]: The secret object if found, otherwise None.
-        """
-        pass
-
-    @abstractmethod
-    async def delete(self, secret_key: str) -> None:
-        """
-        Delete a secret by its secret_key.
-        Args:
-            secret_key (str): The key associated with the secret to be deleted.
         Returns:
             None
         """
-        pass
+        self.data.append(secret)
 
-
-class FakeRepository(Repository):
-    """
-    A fake implementation of SecretRepository for testing purposes.
-    """
-    def __init__(self):
-        self.data: Dict[str, Secret] = {}
-
-    async def create(self, secret: Secret) -> str:
+    async def get(self, secret_key: str) -> Optional[str]:
         """
-        Create a new secret and store it in memory.
+        Retrieves a secret from the repository using its unique secret key.
+
         Args:
-            secret (Secret): The secret object to be stored.
-        Returns:
-            str: The secret_key of the newly created secret.
-        """
-        secret.id = str(uuid.uuid4())
-        self.data[secret.secret_key] = secret
-        return secret.secret_key
+            secret_key (str): The unique identifier of the secret to retrieve.
 
-    async def get(self, secret_key: str) -> Optional[Secret]:
-        """
-        Retrieve a secret by its secret_key.
-        Args:
-            secret_key (str): The key associated with the secret.
         Returns:
-            Optional[Secret]: The secret object if found, otherwise None.
+            Optional[str]: The decrypted secret if found, otherwise None.
         """
-        return self.data.get(secret_key)
+        for item in self.data:
+            if item.id == secret_key:
+                return item.secret
+        return None
 
     async def delete(self, secret_key: str) -> None:
         """
-        Delete a secret by its secret_key.
+        Deletes a secret from the repository using its unique secret key.
+
         Args:
-            secret_key (str): The key associated with the secret to be deleted.
+            secret_key (str): The unique identifier of the secret to delete.
+
         Returns:
             None
         """
-        if secret_key in self.data:
-            del self.data[secret_key]
+        self.data = [item for item in self.data if item.id != secret_key]

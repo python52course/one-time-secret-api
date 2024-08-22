@@ -1,65 +1,83 @@
 import pytest
-from onetimesecret.database import FakeRepository
+from datetime import datetime, timedelta
 from onetimesecret.models import Secret
+from onetimesecret.database import FakeRepository
 
 
 @pytest.fixture
-def fake_repo():
+def repository() -> FakeRepository:
     """
-    Fixture to provide a FakeSecretRepository instance for testing.
+    Fixture to create an instance of FakeRepository for testing.
+
     Returns:
-        FakeSecretRepository: An instance of the fake repository.
+        FakeRepository: An instance of FakeRepository.
     """
     return FakeRepository()
 
 
 @pytest.mark.asyncio
-async def test_create_secret(fake_repo):
+async def test_create_secret(repository: FakeRepository) -> None:
     """
-    Test the creation of a secret in the fake repository.
+    Test the creation of a secret in the repository.
+
     Args:
-        fake_repo (FakeSecretRepository): The fake repository instance.
-    Asserts:
-        The secret key is correct.
-        The secret is stored correctly in the repository.
+        repository (FakeRepository): The instance of FakeRepository.
+
+    Returns:
+        None
     """
-    secret = Secret(secret="secret", passphrase="password", secret_key="key", expiration=None)
-    secret_key = await fake_repo.create(secret)
-    assert secret_key == "key"
-    assert secret_key in fake_repo.data
-    assert fake_repo.data[secret_key].secret == "secret"
+    expiration = datetime.now()
+    secret = Secret(id="test_key", secret="test_secret", expiration=expiration)
+    await repository.create(secret)
+
+    assert len(repository.data) == 1
+    assert repository.data[0] == secret
 
 
 @pytest.mark.asyncio
-async def test_get_secret(fake_repo):
+async def test_get_secret(repository: FakeRepository) -> None:
     """
-    Test retrieving a secret from the fake repository.
-    Args:
-        fake_repo (FakeSecretRepository): The fake repository instance.
-    Asserts:
-        The secret is retrieved correctly.
-        The passphrase is correct.
-    """
-    secret = Secret(secret="secret", passphrase="password", secret_key="key", expiration=None)
-    await fake_repo.create(secret)
-    retrieved_secret = await fake_repo.get(secret_key="key")
-    assert retrieved_secret is not None
-    assert retrieved_secret.secret == "secret"
-    assert retrieved_secret.passphrase == "password"
+    Test retrieving a secret from the repository.
 
-
-@pytest.mark.asyncio
-async def test_delete_secret(fake_repo):
-    """
-    Test deleting a secret from the fake repository.
     Args:
-        fake_repo (FakeSecretRepository): The fake repository instance.
-    Asserts:
-        The secret is deleted correctly.
-        Retrieving the deleted secret returns None.
+        repository (FakeRepository): The instance of FakeRepository.
+
+    Returns:
+        None
     """
-    secret = Secret(secret="secret", passphrase="mypassword", secret_key="key", expiration=None)
-    await fake_repo.create(secret)
-    await fake_repo.delete(secret_key="key")
-    retrieved_secret = await fake_repo.get(secret_key="key")
+    expiration = datetime.now()
+    secret = Secret(id="test_key", secret="test_secret", expiration=expiration)
+    await repository.create(secret)
+
+    retrieved_secret = await repository.get("test_key")
+    assert retrieved_secret == "test_secret"
+
+    retrieved_secret = await repository.get("non_existing_key")
     assert retrieved_secret is None
+
+
+@pytest.mark.asyncio
+async def test_delete_secret(repository: FakeRepository) -> None:
+    """
+    Test deleting a secret from the repository.
+
+    Args:
+        repository (FakeRepository): The instance of FakeRepository.
+
+    Returns:
+        None
+    """
+    expiration1 = datetime.now()
+    expiration2 = datetime.now()
+    secret1 = Secret(id="key1", secret="secret1", expiration=expiration1)
+    secret2 = Secret(id="key2", secret="secret2", expiration=expiration2)
+    await repository.create(secret1)
+    await repository.create(secret2)
+
+    await repository.delete("key1")
+    assert len(repository.data) == 1
+    assert repository.data[0] == secret2
+
+    await repository.delete("non_existing_key")
+    assert len(repository.data) == 1
+    assert repository.data[0] == secret2
