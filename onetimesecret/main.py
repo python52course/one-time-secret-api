@@ -11,16 +11,23 @@ from onetimesecret.config import uri, salt
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Endpoint to generate a new secret.
+    Manages the lifespan of the FastAPI application, including setting up and tearing down resources.
+
+    This function is responsible for initializing the MongoDB repository, creating necessary indexes,
+    and setting up the SecretService. It also ensures that the database connection is properly closed
+    when the application shuts down.
 
     Args:
-        request (SecretRequest): The request object containing the secret content and passphrase.
+        app (FastAPI): The FastAPI application instance.
 
-    Returns:
-        SecretKeyResponse: Response object containing the generated secret key.
+    Yields:
+        None: This function doesn't return anything. It yields control back to the FastAPI application
+              to handle incoming requests.
 
-    Raises:
-        HTTPException: If the request data is invalid or secret generation fails.
+    Ensures:
+        - The MongoDB repository is properly initialized with the required indexes.
+        - The SecretService is configured with the given salt and is attached to the application's state.
+        - The database connection is closed when the application is shut down.
     """
     repository = Repository(uri)
     await repository.initialize_indexes()
