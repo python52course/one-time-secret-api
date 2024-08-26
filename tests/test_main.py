@@ -168,7 +168,11 @@ async def test_ttl_index_creation():
     client = AsyncIOMotorClient("mongodb://localhost:27017")
     db = client['test_db']
     collection = db['secrets']
-    await collection.create_index([('expiration', 1)], expireAfterSeconds=1)
+
     indexes = await collection.index_information()
+
     assert 'expiration_1' in indexes
+
+    ttl_seconds = indexes['expiration_1'].get('expireAfterSeconds')
+    assert ttl_seconds == 1
     client.close()
