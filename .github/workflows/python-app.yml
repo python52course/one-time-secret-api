@@ -10,7 +10,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
+
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
 
     steps:
     - name: Checkout code
@@ -20,11 +26,6 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.8.x'
-
-    - name: Start MongoDB
-      run: |
-        sudo apt-get install -y mongodb
-        sudo systemctl start mongodb
 
     - name: Cache Poetry dependencies
       uses: actions/cache@v3
@@ -42,6 +43,7 @@ jobs:
     - name: Install dependencies
       run: |
         poetry install --no-cache
+        poetry add pytest-asyncio pytest-trio pymongo
 
     - name: Run tests
       run: |
