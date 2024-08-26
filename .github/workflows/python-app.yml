@@ -21,6 +21,11 @@ jobs:
       with:
         python-version: '3.8.x'
 
+    - name: Start MongoDB
+      run: |
+        sudo apt-get install -y mongodb
+        sudo systemctl start mongodb
+
     - name: Cache Poetry dependencies
       uses: actions/cache@v3
       with:
