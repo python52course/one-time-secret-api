@@ -1,0 +1,39 @@
+name: Python application
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+
+    - name: Cache Poetry packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/pypoetry
+          ~/.cache/pypoetry/virtualenvs
+        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-poetry-
+
+    - name: Install Poetry
+      uses: python-poetry/poetry-action@v2
+      with:
+        poetry-version: '1.8.3'
+
+    - name: Install dependencies
+      run: |
+        poetry install --no-root
+
+    - name: Run tests
+      run: |
+        poetry run pytest --maxfail=1 --disable-warnings -q
