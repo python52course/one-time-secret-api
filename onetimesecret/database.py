@@ -6,15 +6,16 @@ from onetimesecret.models import Secret
 
 
 class Repository:
-    def __init__(self, uri: str):
+    def __init__(self, uri: str, db_name: str):
         """
         Initializes a new instance of the Repository class.
 
         Args:
             uri (str): The URI for connecting to the MongoDB database.
+            db_name (str): The name of the MongoDB database to connect to.
         """
         self.__client = AsyncIOMotorClient(uri)
-        self.__db = self.__client['secret_db']
+        self.__db = self.__client[db_name]
         self.__collection = self.__db['secrets']
 
     async def initialize_indexes(self):
