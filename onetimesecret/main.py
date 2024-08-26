@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI):
         - The SecretService is configured with the given salt and is attached to the application's state.
         - The database connection is closed when the application is shut down.
     """
-    repository = Repository(uri)
+    repository = Repository(uri, "secret_db")
     await repository.initialize_indexes()
 
     secret_service = SecretService(salt, repository)
