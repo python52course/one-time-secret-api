@@ -3,10 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - '**'  # Запуск на любые ветки
+      - '**'
   pull_request:
     branches:
-      - '**'  # Запуск на любые pull request ветки
+      - '**'
 
 jobs:
   build:
