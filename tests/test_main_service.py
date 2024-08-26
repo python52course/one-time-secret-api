@@ -12,7 +12,7 @@ class MockSecretService:
     This class simulates the generation and retrieval of secrets with in-memory storage.
     """
 
-    secret_data: Dict[str, Dict[str, str]] = {}
+    data: Dict[str, Dict[str, str]] = {}
 
     async def generate_secret(self, secret: str, passphrase: str) -> str:
         """
@@ -26,7 +26,7 @@ class MockSecretService:
             str: A fixed secret key used for retrieval.
         """
         secret_key = "secret_key"
-        self.secret_data[secret_key] = {"secret": secret, "passphrase": passphrase}
+        self.data[secret_key] = {"secret": secret, "passphrase": passphrase}
         return secret_key
 
     async def get_secret(self, secret_key: str, passphrase: str) -> str:
@@ -43,11 +43,11 @@ class MockSecretService:
         Raises:
             HTTPException: If the secret key is invalid or the passphrase is incorrect.
         """
-        item = self.secret_data.get(secret_key)
+        item = self.data.get(secret_key)
 
         if item:
             if item["passphrase"] == passphrase:
-                del self.secret_data[secret_key]
+                del self.data[secret_key]
                 return item["secret"]
             else:
                 raise HTTPException(
