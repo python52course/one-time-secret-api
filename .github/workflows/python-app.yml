@@ -1,39 +1,35 @@
-name: Python application
+name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - '**'  # Запуск на любые ветки
+  pull_request:
+    branches:
+      - '**'  # Запуск на любые pull request ветки
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Python
+    - name: Set up Python 3.8
       uses: actions/setup-python@v4
       with:
         python-version: '3.8'
 
-    - name: Cache Poetry packages
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cache/pypoetry
-          ~/.cache/pypoetry/virtualenvs
-        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-poetry-
-
     - name: Install Poetry
-      uses: python-poetry/poetry-action@v2
-      with:
-        poetry-version: '1.8.3'
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
 
     - name: Install dependencies
       run: |
-        poetry install --no-root
+        poetry install --no-cache
 
     - name: Run tests
       run: |
-        poetry run pytest --maxfail=1 --disable-warnings -q
+        poetry run pytest
