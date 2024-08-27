@@ -6,14 +6,18 @@ from typing import Dict
 from onetimesecret.main import app
 from onetimesecret.services import SecretService
 from onetimesecret.database import Repository
+from onetimesecret.config import uri
 
 
 @pytest.fixture(scope="module")
 async def setup_real_service():
     """
     Fixture that sets up and tears down the real secret service with MongoDB for testing.
+
+    Sets up a real `SecretService` instance connected to a MongoDB test database.
+    Tears down the service and closes the database connection after tests are done.
     """
-    test_db_uri = "mongodb://localhost:27017"
+    test_db_uri = uri
     test_db_name = "test_db"
 
     repository = Repository(test_db_uri, test_db_name)
@@ -47,7 +51,7 @@ def secret_data() -> Dict[str, Dict[str, str]]:
 @pytest.mark.anyio
 async def test_generate_secret(setup_real_service: None, secret_data: Dict[str, Dict[str, str]]) -> None:
     """
-    Tests the generation of a secret with real service.
+    Tests the generation of a secret with the real service.
 
     Args:
         setup_real_service (None): Fixture that sets up the real service.
@@ -62,7 +66,7 @@ async def test_generate_secret(setup_real_service: None, secret_data: Dict[str, 
 @pytest.mark.anyio
 async def test_get_secret(setup_real_service: None, secret_data: Dict[str, Dict[str, str]]) -> None:
     """
-    Tests retrieving a secret with correct key and passphrase using real service.
+    Tests retrieving a secret with the correct key and passphrase using the real service.
 
     Args:
         setup_real_service (None): Fixture that sets up the real service.
@@ -78,10 +82,11 @@ async def test_get_secret(setup_real_service: None, secret_data: Dict[str, Dict[
 
 
 @pytest.mark.anyio
-async def test_get_secret_with_incorrect_passphrase(setup_real_service: None,
-                                                    secret_data: Dict[str, Dict[str, str]]) -> None:
+async def test_get_secret_with_incorrect_passphrase(
+    setup_real_service: None, secret_data: Dict[str, Dict[str, str]]
+) -> None:
     """
-    Tests retrieving a secret with an incorrect passphrase using real service.
+    Tests retrieving a secret with an incorrect passphrase using the real service.
 
     Args:
         setup_real_service (None): Fixture that sets up the real service.
@@ -98,10 +103,11 @@ async def test_get_secret_with_incorrect_passphrase(setup_real_service: None,
 
 
 @pytest.mark.anyio
-async def test_get_secret_with_incorrect_secret_key(setup_real_service: None,
-                                                    secret_data: Dict[str, Dict[str, str]]) -> None:
+async def test_get_secret_with_incorrect_secret_key(
+    setup_real_service: None, secret_data: Dict[str, Dict[str, str]]
+) -> None:
     """
-    Tests retrieving a secret with an incorrect secret key using real service.
+    Tests retrieving a secret with an incorrect secret key using the real service.
 
     Args:
         setup_real_service (None): Fixture that sets up the real service.
@@ -118,9 +124,11 @@ async def test_get_secret_with_incorrect_secret_key(setup_real_service: None,
 
 
 @pytest.mark.anyio
-async def test_get_secret_with_incorrect_both(setup_real_service: None, secret_data: Dict[str, Dict[str, str]]) -> None:
+async def test_get_secret_with_incorrect_both(
+    setup_real_service: None, secret_data: Dict[str, Dict[str, str]]
+) -> None:
     """
-    Tests retrieving a secret with both incorrect secret key and passphrase using real service.
+    Tests retrieving a secret with both incorrect secret key and passphrase using the real service.
 
     Args:
         setup_real_service (None): Fixture that sets up the real service.
@@ -137,10 +145,11 @@ async def test_get_secret_with_incorrect_both(setup_real_service: None, secret_d
 
 
 @pytest.mark.anyio
-async def test_generate_get_and_verify_secret_deletion(setup_real_service: None,
-                                                       secret_data: Dict[str, Dict[str, str]]) -> None:
+async def test_generate_get_and_verify_secret_deletion(
+    setup_real_service: None, secret_data: Dict[str, Dict[str, str]]
+) -> None:
     """
-    Tests generating, retrieving, and then verifying the deletion of a secret using real service.
+    Tests generating, retrieving, and then verifying the deletion of a secret using the real service.
 
     Args:
         setup_real_service (None): Fixture that sets up the real service.
@@ -163,9 +172,9 @@ async def test_generate_get_and_verify_secret_deletion(setup_real_service: None,
 @pytest.mark.anyio
 async def test_ttl_index_creation():
     """
-    The test verifies that the TTL index on the 'expiration' field has been successfully created.
+    Test that verifies the TTL index on the 'expiration' field has been successfully created in the test MongoDB database.
     """
-    client = AsyncIOMotorClient("mongodb://localhost:27017")
+    client = AsyncIOMotorClient(uri)
     db = client['test_db']
     collection = db['secrets']
 
