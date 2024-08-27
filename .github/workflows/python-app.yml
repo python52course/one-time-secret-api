@@ -43,6 +43,9 @@ jobs:
     - name: Install dependencies
       run: |
         poetry install --no-cache
+
+    - name: Install test dependencies
+      run: |
         poetry add pytest-asyncio pytest-trio pymongo
 
     - name: Run tests
