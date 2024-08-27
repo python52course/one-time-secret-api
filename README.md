@@ -120,4 +120,4 @@ Example Response:
 * Ensure that MongoDB is installed and running before starting the application and running tests.
 * Secrets are encrypted before storage and are never stored in plaintext.
 * Secrets are automatically deleted from the database after they have been retrieved.
-* A TTL (Time-to-Live) index is configured in MongoDB to automatically delete secrets after a specified time, even if they haven't been accessed.
+* A TTL (Time-to-Live) index is configured in MongoDB to automatically delete secrets after a specified time, even if they haven't been accessed. This TTL index is set to 1 minute, ensuring that secrets are removed from the database one minute after their creation if they have not been retrieved.
