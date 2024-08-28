@@ -5,14 +5,14 @@ from pydantic import BaseModel
 
 class Secret(BaseModel):
     """
-    Represents a secret stored in the system.
+    Represents a secret stored in the database.
 
     Attributes:
-        id (str): The unique identifier for the secret.
-        secret (str): The encrypted secret content.
-        expiration (datetime): The expiration date and time of the secret.
+        secret_key (str): A unique identifier for the secret.
+        secret (str): The encrypted content of the secret.
+        expiration (datetime): The date and time when the secret expires.
     """
-    id: str
+    secret_key: str
     secret: str
     expiration: datetime
 

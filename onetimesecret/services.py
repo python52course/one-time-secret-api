@@ -1,11 +1,11 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 from cryptography.fernet import InvalidToken
 from fastapi import HTTPException, status
 
-from onetimesecret.database import FakeRepository
+from onetimesecret.database import Repository
 from onetimesecret.models import Secret
 from onetimesecret.utils import decrypt, encrypt, generate_key_from_passphrase
 
@@ -19,7 +19,7 @@ class SecretService:
         repository (Repository): The repository where secrets are stored.
     """
 
-    def __init__(self, salt: str, repository: 'FakeRepository') -> None:
+    def __init__(self, salt: str, repository: 'Repository') -> None:
         """
         Initializes the SecretService with the provided salt and repository.
 
@@ -30,7 +30,7 @@ class SecretService:
         self.salt = salt.encode()
         self.repository = repository
 
-    def generate_key(self, passphrase: str) -> bytes:
+    async def generate_key(self, passphrase: str) -> bytes:
         """
         Generates a key for encryption based on the provided passphrase.
 
@@ -53,13 +53,13 @@ class SecretService:
         Returns:
             str: A unique identifier for the stored secret.
         """
-        key = self.generate_key(passphrase)
+        key = await self.generate_key(passphrase)
         encrypted_secret = encrypt(secret, key)
         secret_key = str(uuid.uuid4())
         secret_instance = Secret(
-            id=secret_key,
+            secret_key=secret_key,
             secret=encrypted_secret,
-            expiration=datetime.now()
+            expiration=datetime.utcnow() + timedelta(seconds=60)
         )
         await self.repository.create(secret_instance)
         return secret_key
@@ -85,7 +85,7 @@ class SecretService:
                 detail="There is no such secret"
             )
 
-        key = self.generate_key(passphrase)
+        key = await self.generate_key(passphrase)
         try:
             decrypted_secret = decrypt(secret, key)
         except InvalidToken:
